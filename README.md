@@ -20,3 +20,5 @@ cargo add --rename aoc --git "https://github.com/thecjharries/aoc-rust" --branch
 ## Important Setup
 
 You must have an `AOC_SESSION` environment variable set to your Advent of Code session cookie. You can find this cookie by logging into the Advent of Code website and looking at the value of the `session` cookie.
+
+I recommend [direnv](https://direnv.net/) for managing environment variables. Make sure to add `.envrc` to your `.gitignore` file.
