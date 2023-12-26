@@ -16,6 +16,7 @@ use std::env;
 
 pub fn session_cookie() -> String {
     let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
+    let session = session.trim_start_matches("session=");
     format!("session={}", session)
 }
 
@@ -33,6 +34,8 @@ mod tests {
     #[test]
     fn lib_should_return_session_cookie_when_session_in_env() {
         env::set_var("AOC_SESSION", "test");
+        assert_eq!("session=test", session_cookie());
+        env::set_var("AOC_SESSION", "session=test");
         assert_eq!("session=test", session_cookie());
     }
 }
