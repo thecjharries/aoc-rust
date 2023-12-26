@@ -15,7 +15,8 @@
 use std::env;
 
 pub fn session_cookie() -> String {
-    todo!()
+    let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
+    format!("session={}", session)
 }
 
 #[cfg(test)]
