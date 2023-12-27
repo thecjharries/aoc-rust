@@ -23,6 +23,7 @@ pub fn session_cookie() -> String {
     format!("session={}", session)
 }
 
+#[cfg(not(tarpaulin_include))]
 pub fn get_input(year: u32, day: u32) -> String {
     let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
     let client = Client::new();
@@ -42,6 +43,7 @@ pub fn get_input(year: u32, day: u32) -> String {
     response.text().expect("Failed to get input text")
 }
 
+#[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod tests {
     use super::*;
