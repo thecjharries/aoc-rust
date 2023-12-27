@@ -20,6 +20,10 @@ pub fn session_cookie() -> String {
     format!("session={}", session)
 }
 
+pub fn get_input(year: u32, day: u32) -> String {
+    todo!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
