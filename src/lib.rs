@@ -27,25 +27,31 @@ mod tests {
     #[test]
     #[should_panic]
     fn lib_should_panic_when_session_not_in_env() {
-        let current_session = env::var("AOC_SESSION");
+        let current_session = match env::var("AOC_SESSION") {
+            Ok(session) => Some(session),
+            Err(_) => None,
+        };
         env::remove_var("AOC_SESSION");
         session_cookie();
         match current_session {
-            Ok(session) => env::set_var("AOC_SESSION", session),
-            Err(_) => {}
+            Some(session) => env::set_var("AOC_SESSION", session),
+            None => {}
         }
     }
 
     #[test]
     fn lib_should_return_session_cookie_when_session_in_env() {
-        let current_session = env::var("AOC_SESSION");
+        let current_session = match env::var("AOC_SESSION") {
+            Ok(session) => Some(session),
+            Err(_) => None,
+        };
         env::set_var("AOC_SESSION", "test");
         assert_eq!("session=test", session_cookie());
         env::set_var("AOC_SESSION", "session=test");
         assert_eq!("session=test", session_cookie());
         match current_session {
-            Ok(session) => env::set_var("AOC_SESSION", session),
-            Err(_) => {}
+            Some(session) => env::set_var("AOC_SESSION", session),
+            None => env::remove_var("AOC_SESSION"),
         }
     }
 }
