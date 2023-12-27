@@ -58,4 +58,10 @@ mod tests {
             None => env::remove_var("AOC_SESSION"),
         }
     }
+
+    #[test]
+    fn lib_should_get_input() {
+        let input = get_input(2023, 14);
+        assert_ne!("", input);
+    }
 }
