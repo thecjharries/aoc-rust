@@ -14,6 +14,9 @@
 
 use std::env;
 
+use reqwest::blocking::Client;
+use reqwest::header::{HeaderValue, COOKIE};
+
 pub fn session_cookie() -> String {
     let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
     let session = session.trim_start_matches("session=");
@@ -21,7 +24,19 @@ pub fn session_cookie() -> String {
 }
 
 pub fn get_input(year: u32, day: u32) -> String {
-    todo!()
+    let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
+    let client = Client::new();
+    let request = client.get(&url).header(
+        COOKIE,
+        HeaderValue::from_str(&session_cookie()).expect("Failed to create header value"),
+    );
+    let response = request.send().expect("Failed to send response");
+    assert!(
+        response.status().is_success(),
+        "Failed to get input: {}",
+        response.status()
+    );
+    response.text().expect("Failed to get input text")
 }
 
 #[cfg(test)]
