@@ -26,11 +26,14 @@ pub fn session_cookie() -> String {
 pub fn get_input(year: u32, day: u32) -> String {
     let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
     let client = Client::new();
-    let request = client.get(&url).header(
-        COOKIE,
-        HeaderValue::from_str(&session_cookie()).expect("Failed to create header value"),
-    );
-    let response = request.send().expect("Failed to send response");
+    let response = client
+        .get(&url)
+        .header(
+            COOKIE,
+            HeaderValue::from_str(&session_cookie()).expect("Failed to create header value"),
+        )
+        .send()
+        .expect("Failed to send response");
     assert!(
         response.status().is_success(),
         "Failed to get input: {}",
@@ -43,7 +46,9 @@ pub fn get_input(year: u32, day: u32) -> String {
 mod tests {
     use super::*;
 
-    use serial_test::{parallel, serial};
+    // serial_test doesn't play well with tarpaulin
+    // You might still need to use cargo test -- --test-threads=1
+    use serial_test::serial;
 
     #[test]
     #[serial]
@@ -84,5 +89,22 @@ mod tests {
     fn lib_should_get_input() {
         let input = get_input(2023, 14);
         assert_ne!("", input);
+    }
+
+    #[test]
+    #[serial]
+    #[should_panic]
+    #[ignore]
+    fn lib_should_panic_on_input_when_session_is_bad() {
+        let current_session = match env::var("AOC_SESSION") {
+            Ok(session) => Some(session),
+            Err(_) => None,
+        };
+        env::set_var("AOC_SESSION", "session=test");
+        get_input(2023, 14);
+        match current_session {
+            Some(session) => env::set_var("AOC_SESSION", session),
+            None => {}
+        }
     }
 }
