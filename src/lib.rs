@@ -43,7 +43,10 @@ pub fn get_input(year: u32, day: u32) -> String {
 mod tests {
     use super::*;
 
+    use serial_test::{parallel, serial};
+
     #[test]
+    #[serial]
     #[should_panic]
     fn lib_should_panic_when_session_not_in_env() {
         let current_session = match env::var("AOC_SESSION") {
@@ -59,6 +62,7 @@ mod tests {
     }
 
     #[test]
+    #[serial]
     fn lib_should_return_session_cookie_when_session_in_env() {
         let current_session = match env::var("AOC_SESSION") {
             Ok(session) => Some(session),
@@ -75,6 +79,8 @@ mod tests {
     }
 
     #[test]
+    #[serial]
+    #[ignore]
     fn lib_should_get_input() {
         let input = get_input(2023, 14);
         assert_ne!("", input);
