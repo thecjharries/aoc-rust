@@ -25,7 +25,7 @@ pub fn session_cookie() -> String {
 }
 
 #[cfg(not(tarpaulin_include))]
-pub fn get_input(year: u32, day: u32) -> String {
+pub fn get_input_from_aoc(year: u32, day: u32) -> String {
     let url = format!("https://adventofcode.com/{}/day/{}/input", year, day);
     let client = Client::new();
     let response = client
@@ -101,7 +101,7 @@ mod tests {
     #[serial]
     #[ignore]
     fn lib_should_get_input() {
-        let input = get_input(2023, 14);
+        let input = get_input_from_aoc(2023, 14);
         assert_ne!("", input);
     }
 
@@ -115,7 +115,7 @@ mod tests {
             Err(_) => None,
         };
         env::set_var("AOC_SESSION", "session=test");
-        get_input(2023, 14);
+        get_input_from_aoc(2023, 14);
         match current_session {
             Some(session) => env::set_var("AOC_SESSION", session),
             None => {}
