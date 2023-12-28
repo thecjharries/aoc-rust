@@ -16,6 +16,7 @@ use std::env;
 
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderValue, COOKIE};
+use xdg::BaseDirectories;
 
 pub fn session_cookie() -> String {
     let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
@@ -41,6 +42,17 @@ pub fn get_input(year: u32, day: u32) -> String {
         response.status()
     );
     response.text().expect("Failed to get input text")
+}
+
+pub fn get_cache_path(year: u32, day: u32) -> String {
+    let base_directories = BaseDirectories::with_profile("advent-of-code", year.to_string())
+        .expect("Faile to load base directories");
+    base_directories
+        .get_cache_home()
+        .join(format!("day-{}.txt", day))
+        .to_str()
+        .unwrap()
+        .to_string()
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -108,5 +120,15 @@ mod tests {
             Some(session) => env::set_var("AOC_SESSION", session),
             None => {}
         }
+    }
+
+    #[test]
+    fn lib_should_get_cache_path() {
+        let cache_path = get_cache_path(2023, 14);
+        // This should work on any platform
+        // We assume nothing about the XDG Base Dir setup eg ~/.cache
+        // We only test what we can guarantee whihc is the prefix and profile
+        let expected = std::path::Path::new("advent-of-code/2023/day-14.txt");
+        assert!(cache_path.ends_with(expected.to_str().unwrap()));
     }
 }
