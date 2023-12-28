@@ -55,6 +55,22 @@ pub fn get_cache_path(year: u32, day: u32) -> String {
         .to_string()
 }
 
+pub fn get_input(year: u32, day: u32) -> String {
+    let cache_path = get_cache_path(year, day);
+    let mut result = String::new();
+    if std::path::Path::new(&cache_path).exists() {
+        result = match std::fs::read_to_string(&cache_path) {
+            Ok(contents) => contents,
+            Err(_) => String::new(),
+        };
+    }
+    if "" == result {
+        result = get_input_from_aoc(year, day);
+        std::fs::write(&cache_path, &result).expect("Failed to write cache file");
+    }
+    result
+}
+
 #[cfg(not(tarpaulin_include))]
 #[cfg(test)]
 mod tests {
