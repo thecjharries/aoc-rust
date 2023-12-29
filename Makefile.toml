@@ -18,3 +18,15 @@ args = ["tarpaulin", "-v", "--fail-under=100"]
 
 [tasks.coverage]
 alias = "tarpaulin"
+
+[tasks.github-push]
+command = "git"
+args = ["push", "-u", "origin", "HEAD"]
+
+[tasks.github-create-pr]
+command = "gh"
+args = ["pr", "create", "--fill"]
+
+[tasks.github-merge-pr]
+command = "gh"
+args = ["pr", "merge", "--merge", "--delete-branch"]
