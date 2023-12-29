@@ -36,4 +36,4 @@ args = ["pr", "merge", "--merge", "--delete-branch"]
 
 [tasks.finish-feature]
 description = "Finish a feature branch"
-depends = ["github-push", "github-create-pr", "github-merge-pr"]
+dependencies = ["github-push", "github-create-pr", "github-merge-pr"]
