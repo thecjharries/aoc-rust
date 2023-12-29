@@ -1,3 +1,8 @@
+[env]
+# can be defined as kcov, tarpaulin, ...
+CARGO_MAKE_COVERAGE_PROVIDER = "tarpaulin"
+
+
 [tasks.default]
 alias = "test"
 
@@ -6,7 +11,10 @@ install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
 
-[tasks.coverage]
+[tasks.tarpaulin]
 install_crate = "cargo-tarpaulin"
 command = "cargo"
 args = ["tarpaulin", "-v", "--fail-under=100"]
+
+[tasks.coverage]
+alias = "tarpaulin"
