@@ -1,0 +1,39 @@
+[tasks.default]
+description = "Only test by default"
+alias = "test"
+
+[tasks.format]
+description = "Format the code"
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+[tasks.tarpaulin]
+description = "Run code coverage using opinionated tarpaulin settings"
+install_crate = "cargo-tarpaulin"
+command = "cargo"
+args = ["tarpaulin", "-v", "--fail-under=100"]
+
+[tasks.coverage]
+description = "Override default coverage with tarpaulin settings"
+alias = "tarpaulin"
+
+[tasks.github-push]
+description = "Push the current branch to GitHub"
+command = "git"
+args = ["push", "-u", "origin", "HEAD"]
+
+[tasks.github-create-pr]
+description = "Create a PR on GitHub"
+command = "gh"
+args = ["pr", "create", "--fill"]
+dependencies = ["clean"]
+
+[tasks.github-merge-pr]
+description = "Merge a PR on GitHub"
+command = "gh"
+args = ["pr", "merge", "--merge", "--delete-branch"]
+
+[tasks.finish-feature]
+description = "Finish a feature branch"
+dependencies = ["github-push", "github-create-pr", "github-merge-pr"]
