@@ -30,3 +30,6 @@ args = ["pr", "create", "--fill"]
 [tasks.github-merge-pr]
 command = "gh"
 args = ["pr", "merge", "--merge", "--delete-branch"]
+
+[tasks.finish-feature]
+depends = ["github-push", "github-create-pr", "github-merge-pr"]
