@@ -5,3 +5,8 @@ alias = "test"
 install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
+
+[tasks.coverage]
+install_crate = "cargo-tarpaulin"
+command = "cargo"
+args = ["tarpaulin", "-v", "--fail-under=100"]
