@@ -13,6 +13,8 @@
 // limitations under the License.
 
 use std::env;
+use std::fs::{create_dir_all, read_to_string, remove_file, write};
+use std::path::Path;
 
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderValue, COOKIE};
@@ -58,15 +60,17 @@ pub fn get_cache_path(year: u32, day: u32) -> String {
 pub fn get_input(year: u32, day: u32) -> String {
     let cache_path = get_cache_path(year, day);
     let mut result = String::new();
-    if std::path::Path::new(&cache_path).exists() {
-        result = match std::fs::read_to_string(&cache_path) {
+    if Path::new(&cache_path).exists() {
+        result = match read_to_string(&cache_path) {
             Ok(contents) => contents,
             Err(_) => String::new(),
         };
     }
     if "" == result {
         result = get_input_from_aoc(year, day);
-        std::fs::write(&cache_path, &result).expect("Failed to write cache file");
+        create_dir_all(Path::new(&cache_path).parent().unwrap())
+            .expect("Failed to create cache directory");
+        write(&cache_path, &result).expect("Failed to write cache file");
     }
     result
 }
