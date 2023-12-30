@@ -149,4 +149,16 @@ mod tests {
         let expected = std::path::Path::new("advent-of-code/2023/day-14.txt");
         assert!(cache_path.ends_with(expected.to_str().unwrap()));
     }
+
+    #[test]
+    #[serial]
+    fn lib_should_write_to_cache_when_empty() {
+        let cache_path = get_cache_path(2023, 14);
+        if std::path::Path::new(&cache_path).exists() {
+            std::fs::remove_file(&cache_path).expect("Failed to remove cache file");
+        }
+        assert!(!std::path::Path::new(&cache_path).exists());
+        get_input(2023, 14);
+        assert!(std::path::Path::new(&cache_path).exists());
+    }
 }
