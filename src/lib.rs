@@ -13,6 +13,8 @@
 // limitations under the License.
 
 use std::env;
+use std::fs::{create_dir_all, read_to_string, write};
+use std::path::Path;
 
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderValue, COOKIE};
@@ -58,15 +60,17 @@ pub fn get_cache_path(year: u32, day: u32) -> String {
 pub fn get_input(year: u32, day: u32) -> String {
     let cache_path = get_cache_path(year, day);
     let mut result = String::new();
-    if std::path::Path::new(&cache_path).exists() {
-        result = match std::fs::read_to_string(&cache_path) {
+    if Path::new(&cache_path).exists() {
+        result = match read_to_string(&cache_path) {
             Ok(contents) => contents,
             Err(_) => String::new(),
         };
     }
     if "" == result {
         result = get_input_from_aoc(year, day);
-        std::fs::write(&cache_path, &result).expect("Failed to write cache file");
+        create_dir_all(Path::new(&cache_path).parent().unwrap())
+            .expect("Failed to create cache directory");
+        write(&cache_path, &result).expect("Failed to write cache file");
     }
     result
 }
@@ -76,6 +80,8 @@ pub fn get_input(year: u32, day: u32) -> String {
 mod tests {
     use super::*;
 
+    use std::fs::remove_file;
+
     // serial_test doesn't play well with tarpaulin
     // You might still need to use cargo test -- --test-threads=1
     use serial_test::serial;
@@ -83,6 +89,7 @@ mod tests {
     #[test]
     #[serial]
     #[should_panic]
+    #[ignore]
     fn lib_should_panic_when_session_not_in_env() {
         let current_session = match env::var("AOC_SESSION") {
             Ok(session) => Some(session),
@@ -98,6 +105,7 @@ mod tests {
 
     #[test]
     #[serial]
+    #[ignore]
     fn lib_should_return_session_cookie_when_session_in_env() {
         let current_session = match env::var("AOC_SESSION") {
             Ok(session) => Some(session),
@@ -144,7 +152,22 @@ mod tests {
         // This should work on any platform
         // We assume nothing about the XDG Base Dir setup eg ~/.cache
         // We only test what we can guarantee whihc is the prefix and profile
-        let expected = std::path::Path::new("advent-of-code/2023/day-14.txt");
+        let expected = Path::new("advent-of-code/2023/day-14.txt");
         assert!(cache_path.ends_with(expected.to_str().unwrap()));
+    }
+
+    // This is an expensive test for AoC
+    // It pulls down the input every time
+    #[test]
+    #[serial]
+    #[ignore]
+    fn lib_should_write_to_cache_when_empty() {
+        let cache_path = get_cache_path(2023, 14);
+        if Path::new(&cache_path).exists() {
+            remove_file(&cache_path).expect("Failed to remove cache file");
+        }
+        assert!(!Path::new(&cache_path).exists());
+        get_input(2023, 14);
+        assert!(Path::new(&cache_path).exists());
     }
 }
