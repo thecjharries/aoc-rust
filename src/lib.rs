@@ -156,8 +156,11 @@ mod tests {
         assert!(cache_path.ends_with(expected.to_str().unwrap()));
     }
 
+    // This is an expensive test for AoC
+    // It pulls down the input every time
     #[test]
     #[serial]
+    #[ignore]
     fn lib_should_write_to_cache_when_empty() {
         let cache_path = get_cache_path(2023, 14);
         if Path::new(&cache_path).exists() {
