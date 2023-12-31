@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::env;
+use std::env::{self, VarError};
 
-pub fn session_cookie() -> String {
-    let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
+pub fn session_cookie() -> Result<String, VarError> {
+    let session = env::var("AOC_SESSION")?;
     let session = session.trim_start_matches("session=");
-    format!("session={}", session)
+    Ok(format!("session={}", session))
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -31,14 +31,13 @@ mod tests {
 
     #[test]
     #[serial]
-    #[should_panic]
-    fn lib_should_panic_when_session_not_in_env() {
+    fn lib_should_error_when_session_not_in_env() {
         let current_session = match env::var("AOC_SESSION") {
             Ok(session) => Some(session),
             Err(_) => None,
         };
         env::remove_var("AOC_SESSION");
-        session_cookie();
+        assert!(session_cookie().is_err());
         match current_session {
             Some(session) => env::set_var("AOC_SESSION", session),
             None => {}
@@ -53,9 +52,9 @@ mod tests {
             Err(_) => None,
         };
         env::set_var("AOC_SESSION", "test");
-        assert_eq!("session=test", session_cookie());
+        assert_eq!("session=test", session_cookie().unwrap());
         env::set_var("AOC_SESSION", "session=test");
-        assert_eq!("session=test", session_cookie());
+        assert_eq!("session=test", session_cookie().unwrap());
         match current_session {
             Some(session) => env::set_var("AOC_SESSION", session),
             None => env::remove_var("AOC_SESSION"),
