@@ -31,14 +31,13 @@ mod tests {
 
     #[test]
     #[serial]
-    #[should_panic]
-    fn lib_should_panic_when_session_not_in_env() {
+    fn lib_should_error_when_session_not_in_env() {
         let current_session = match env::var("AOC_SESSION") {
             Ok(session) => Some(session),
             Err(_) => None,
         };
         env::remove_var("AOC_SESSION");
-        session_cookie();
+        assert!(session_cookie().is_err());
         match current_session {
             Some(session) => env::set_var("AOC_SESSION", session),
             None => {}
@@ -53,9 +52,9 @@ mod tests {
             Err(_) => None,
         };
         env::set_var("AOC_SESSION", "test");
-        assert_eq!("session=test", session_cookie());
+        assert_eq!("session=test", session_cookie().unwrap());
         env::set_var("AOC_SESSION", "session=test");
-        assert_eq!("session=test", session_cookie());
+        assert_eq!("session=test", session_cookie().unwrap());
         match current_session {
             Some(session) => env::set_var("AOC_SESSION", session),
             None => env::remove_var("AOC_SESSION"),
