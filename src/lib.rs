@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::env;
 use std::fs::{create_dir_all, read_to_string, write};
 use std::path::Path;
 
@@ -20,11 +19,9 @@ use reqwest::blocking::Client;
 use reqwest::header::{HeaderValue, COOKIE};
 use xdg::BaseDirectories;
 
-pub fn session_cookie() -> String {
-    let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
-    let session = session.trim_start_matches("session=");
-    format!("session={}", session)
-}
+mod session;
+
+pub use session::session_cookie;
 
 #[cfg(not(tarpaulin_include))]
 pub fn get_input_from_aoc(year: u32, day: u32) -> String {
@@ -80,46 +77,12 @@ pub fn get_input(year: u32, day: u32) -> String {
 mod tests {
     use super::*;
 
+    use std::env;
     use std::fs::remove_file;
 
     // serial_test doesn't play well with tarpaulin
     // You might still need to use cargo test -- --test-threads=1
     use serial_test::serial;
-
-    #[test]
-    #[serial]
-    #[should_panic]
-    #[ignore]
-    fn lib_should_panic_when_session_not_in_env() {
-        let current_session = match env::var("AOC_SESSION") {
-            Ok(session) => Some(session),
-            Err(_) => None,
-        };
-        env::remove_var("AOC_SESSION");
-        session_cookie();
-        match current_session {
-            Some(session) => env::set_var("AOC_SESSION", session),
-            None => {}
-        }
-    }
-
-    #[test]
-    #[serial]
-    #[ignore]
-    fn lib_should_return_session_cookie_when_session_in_env() {
-        let current_session = match env::var("AOC_SESSION") {
-            Ok(session) => Some(session),
-            Err(_) => None,
-        };
-        env::set_var("AOC_SESSION", "test");
-        assert_eq!("session=test", session_cookie());
-        env::set_var("AOC_SESSION", "session=test");
-        assert_eq!("session=test", session_cookie());
-        match current_session {
-            Some(session) => env::set_var("AOC_SESSION", session),
-            None => env::remove_var("AOC_SESSION"),
-        }
-    }
 
     #[test]
     #[serial]
