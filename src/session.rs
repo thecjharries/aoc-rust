@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::env;
+use std::env::{self, VarError};
 
-pub fn session_cookie() -> String {
-    let session = env::var("AOC_SESSION").expect("AOC_SESSION not in environment");
+pub fn session_cookie() -> Result<String, VarError> {
+    let session = env::var("AOC_SESSION")?;
     let session = session.trim_start_matches("session=");
-    format!("session={}", session)
+    Ok(format!("session={}", session))
 }
 
 #[cfg(not(tarpaulin_include))]
