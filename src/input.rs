@@ -29,7 +29,8 @@ pub fn get_input_from_aoc(year: u32, day: u32) -> String {
         .get(&url)
         .header(
             COOKIE,
-            HeaderValue::from_str(&session_cookie()).expect("Failed to create header value"),
+            HeaderValue::from_str(&session_cookie().unwrap())
+                .expect("Failed to create header value"),
         )
         .send()
         .expect("Failed to send response");
